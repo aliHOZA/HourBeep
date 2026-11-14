@@ -66,22 +66,26 @@ final class Scheduler {
 
     static void schedule(Context context) {
         AlarmManager alarms = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        PendingIntent pi = pending(context);
         if (alarms == null) {
             return;
         }
+        PendingIntent operation = pending(context);
         if (!Prefs.enabled(context)) {
-            alarms.cancel(pi);
+            alarms.cancel(operation);
             return;
         }
         long when = nextTrigger(context, System.currentTimeMillis());
+        PendingIntent showIntent = showIntent(context);
         try {
-            alarms.setAlarmClock(new AlarmManager.AlarmClockInfo(when, pi), pi);
+            alarms.setAlarmClock(
+                new AlarmManager.AlarmClockInfo(when, showIntent),
+                operation
+            );
         } catch (SecurityException exactBlocked) {
             try {
-                alarms.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, when, pi);
+                alarms.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, when, operation);
             } catch (SecurityException ignored) {
-                alarms.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, when, pi);
+                alarms.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, when, operation);
             }
         }
     }
@@ -101,5 +105,14 @@ final class Scheduler {
             flags |= PendingIntent.FLAG_IMMUTABLE;
         }
         return PendingIntent.getBroadcast(context, REQUEST, intent, flags);
+    }
+
+    private static PendingIntent showIntent(Context context) {
+        Intent intent = new Intent(context, MainActivity.class);
+        int flags = PendingIntent.FLAG_UPDATE_CURRENT;
+        if (Build.VERSION.SDK_INT >= 23) {
+            flags |= PendingIntent.FLAG_IMMUTABLE;
+        }
+        return PendingIntent.getActivity(context, REQUEST, intent, flags);
     }
 }

@@ -10,9 +10,10 @@
     <string name="next_at">Next beep: %1$s</string>
     <string name="exact_off">Exact alarms are blocked. Tap to allow them, or the beep can be late.</string>
     <string name="sound">Sound</string>
-    <string name="sound_soft">Soft beep</string>
-    <string name="sound_casio">Casio beep</string>
+    <string name="sound_soft">Soft</string>
+    <string name="sound_beep_beep">Beep Beep</string>
     <string name="sound_cuckoo">Cuckoo</string>
+    <string name="sound_casio">Casio</string>
     <string name="battery">Unrestrict battery</string>
     <string name="hint">One short sound at the top of each hour, on the alarm volume. Music ducks for a moment. Nothing is sent off the phone. If a beep is missed after the screen has been off all day, tap Unrestrict battery.</string>
 </resources>

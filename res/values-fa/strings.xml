@@ -10,9 +10,10 @@
     <string name="next_at">بوق بعدی: %1$s</string>
     <string name="exact_off">زنگ دقیق مسدود است. برای اجازه دادن لمس کنید، وگرنه بوق ممکن است دیر پخش شود.</string>
     <string name="sound">صدا</string>
-    <string name="sound_soft">بوق نرم</string>
-    <string name="sound_casio">بوق کاسیو</string>
-    <string name="sound_cuckoo">کوکو</string>
+    <string name="sound_soft">نرم</string>
+    <string name="sound_beep_beep">بیپ بیپ</string>
+    <string name="sound_cuckoo">کو کو</string>
+    <string name="sound_casio">کاسیو</string>
     <string name="battery">بدون محدودیت باتری</string>
     <string name="hint">یک صدای کوتاه در راس هر ساعت، با بلندی صدای زنگ. موسیقی برای لحظه‌ای کوتاه پایین می‌آید. هیچ چیزی از گوشی خارج نمی‌شود. اگر بعد از یک روز با صفحه‌ی خاموش بوق جا افتاد، دکمه‌ی بدون محدودیت باتری را بزنید.</string>
 </resources>
