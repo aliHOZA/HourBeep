@@ -26,6 +26,11 @@ final class Prefs {
     static final String QUIET = "quiet";
     static final String START = "start";
     static final String END = "end";
+    static final String SOUND = "sound";
+
+    static final String SOUND_SOFT = "soft";
+    static final String SOUND_CASIO = "casio";
+    static final String SOUND_CUCKOO = "cuckoo";
 
     private Prefs() {}
 
@@ -47,5 +52,20 @@ final class Prefs {
 
     static int endMin(Context context) {
         return get(context).getInt(END, 7 * 60);
+    }
+
+    static String sound(Context context) {
+        return get(context).getString(SOUND, SOUND_CASIO);
+    }
+
+    static int soundRes(Context context) {
+        String id = sound(context);
+        if (SOUND_CUCKOO.equals(id)) {
+            return R.raw.cuckoo;
+        }
+        if (SOUND_SOFT.equals(id)) {
+            return R.raw.chime;
+        }
+        return R.raw.casio;
     }
 }

@@ -17,7 +17,6 @@
 
 package dev.hourmark.chime;
 
-import android.app.AlarmManager;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.net.Uri;
@@ -25,11 +24,14 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.PowerManager;
 import android.provider.Settings;
 import android.text.format.DateFormat;
 import android.view.View;
+import android.view.WindowInsets;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.RadioGroup;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -52,11 +54,14 @@ public class MainActivity extends android.app.Activity {
     private Switch quiet;
     private Button start;
     private Button end;
+    private Button battery;
+    private RadioGroup sounds;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        applyInsets();
         clock = findViewById(R.id.clock);
         next = findViewById(R.id.next);
         exact = findViewById(R.id.exact);
@@ -64,10 +69,13 @@ public class MainActivity extends android.app.Activity {
         quiet = findViewById(R.id.quiet);
         start = findViewById(R.id.start);
         end = findViewById(R.id.end);
+        battery = findViewById(R.id.battery);
+        sounds = findViewById(R.id.sounds);
         Button test = findViewById(R.id.test);
 
         enabled.setChecked(Prefs.enabled(this));
         quiet.setChecked(Prefs.quiet(this));
+        sounds.check(radioFor(Prefs.sound(this)));
 
         enabled.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -83,6 +91,12 @@ public class MainActivity extends android.app.Activity {
                 Prefs.get(MainActivity.this).edit().putBoolean(Prefs.QUIET, isChecked).apply();
                 Scheduler.schedule(MainActivity.this);
                 render();
+            }
+        });
+        sounds.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                Prefs.get(MainActivity.this).edit().putString(Prefs.SOUND, soundFor(checkedId)).apply();
             }
         });
         start.setOnClickListener(new View.OnClickListener() {
@@ -109,6 +123,12 @@ public class MainActivity extends android.app.Activity {
                 askExact();
             }
         });
+        battery.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                askBattery();
+            }
+        });
         Scheduler.schedule(this);
     }
 
@@ -123,6 +143,22 @@ public class MainActivity extends android.app.Activity {
     protected void onPause() {
         handler.removeCallbacks(tick);
         super.onPause();
+    }
+
+    private void applyInsets() {
+        if (Build.VERSION.SDK_INT < 30) {
+            return;
+        }
+        final View root = findViewById(R.id.root);
+        root.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
+            @Override
+            public WindowInsets onApplyWindowInsets(View v, WindowInsets insets) {
+                android.graphics.Insets bars = insets.getInsets(WindowInsets.Type.systemBars());
+                v.setPadding(bars.left, bars.top, bars.right, bars.bottom);
+                return WindowInsets.CONSUMED;
+            }
+        });
+        root.requestApplyInsets();
     }
 
     private void pick(final boolean startTime) {
@@ -143,7 +179,7 @@ public class MainActivity extends android.app.Activity {
     }
 
     private void askExact() {
-        if (Build.VERSION.SDK_INT < 31) {
+        if (Build.VERSION.SDK_INT < 31 || Build.VERSION.SDK_INT >= 33) {
             return;
         }
         try {
@@ -158,6 +194,18 @@ public class MainActivity extends android.app.Activity {
         }
     }
 
+    private void askBattery() {
+        try {
+            Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+            intent.setData(Uri.parse("package:" + getPackageName()));
+            startActivity(intent);
+        } catch (Exception ignored) {
+            Intent details = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+            details.setData(Uri.parse("package:" + getPackageName()));
+            startActivity(details);
+        }
+    }
+
     private void render() {
         Calendar now = Calendar.getInstance();
         clock.setText(DateFormat.getTimeFormat(this).format(now.getTime()));
@@ -167,13 +215,19 @@ public class MainActivity extends android.app.Activity {
             next.setText(R.string.next_off);
         } else {
             long when = Scheduler.nextTrigger(this, System.currentTimeMillis());
-            next.setText(getString(R.string.next_at, DateFormat.getTimeFormat(this).format(when)));
+            String formatted = DateFormat.getTimeFormat(this).format(when);
+            next.setText(getString(R.string.next_at, formatted));
         }
-        boolean allowed = Scheduler.canExact(this);
-        exact.setVisibility(allowed ? View.GONE : View.VISIBLE);
-        if (!allowed) {
+        boolean showExact = Build.VERSION.SDK_INT >= 31
+                && Build.VERSION.SDK_INT < 33
+                && !Scheduler.canExact(this);
+        exact.setVisibility(showExact ? View.VISIBLE : View.GONE);
+        if (showExact) {
             exact.setText(R.string.exact_off);
         }
+        PowerManager pm = (PowerManager) getSystemService(POWER_SERVICE);
+        boolean exempt = pm != null && pm.isIgnoringBatteryOptimizations(getPackageName());
+        battery.setVisibility(exempt ? View.GONE : View.VISIBLE);
     }
 
     private String formatMin(int minuteOfDay) {
@@ -182,5 +236,25 @@ public class MainActivity extends android.app.Activity {
         calendar.set(Calendar.MINUTE, minuteOfDay % 60);
         calendar.set(Calendar.SECOND, 0);
         return DateFormat.getTimeFormat(this).format(calendar.getTime());
+    }
+
+    private static int radioFor(String sound) {
+        if (Prefs.SOUND_CUCKOO.equals(sound)) {
+            return R.id.sound_cuckoo;
+        }
+        if (Prefs.SOUND_SOFT.equals(sound)) {
+            return R.id.sound_soft;
+        }
+        return R.id.sound_casio;
+    }
+
+    private static String soundFor(int checkedId) {
+        if (checkedId == R.id.sound_cuckoo) {
+            return Prefs.SOUND_CUCKOO;
+        }
+        if (checkedId == R.id.sound_soft) {
+            return Prefs.SOUND_SOFT;
+        }
+        return Prefs.SOUND_CASIO;
     }
 }

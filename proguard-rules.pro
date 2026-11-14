@@ -1,3 +1,5 @@
 -keep class dev.hourmark.chime.MainActivity { <init>(); }
 -keep class dev.hourmark.chime.ChimeReceiver { <init>(); }
 -keep class dev.hourmark.chime.BootReceiver { <init>(); }
+-keepclassmembers class * extends android.content.BroadcastReceiver { public void onReceive(...); }
+-keepclassmembers class * extends android.app.Activity { public void onCreate(...); }

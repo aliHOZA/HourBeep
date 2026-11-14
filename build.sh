@@ -1,5 +1,5 @@
 #!/bin/sh
-# Build Hour Beep 1.0. Requires Android SDK build-tools 34 and platform android-36.
+# Build Hour Beep 1.1. Requires Android SDK build-tools 34 and platform android-36.
 set -e
 SDK="${ANDROID_SDK_ROOT:-$HOME/Android/Sdk}"
 AAPT="$SDK/build-tools/34.0.0/aapt2"
@@ -17,8 +17,8 @@ done
   --java gen \
   --min-sdk-version 26 \
   --target-sdk-version 36 \
-  --version-code 1 \
-  --version-name 1.0 \
+  --version-code 2 \
+  --version-name 1.1 \
   -o unsigned.apk \
   compiled/*
 javac --release 11 -classpath "$JAR" -d classes gen/dev/hourmark/chime/R.java src/dev/hourmark/chime/*.java
@@ -31,4 +31,4 @@ with zipfile.ZipFile("unsigned.apk", "a") as z:
     z.write("classes.dex", "classes.dex")
 PY
 echo "Built $ROOT/unsigned.apk"
-echo "Sign it with your own keystore. Do not publish the private key."
+echo "Sign it with your own keystore. The key used for the release APKs is not published."

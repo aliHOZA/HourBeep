@@ -18,7 +18,10 @@
 package dev.hourmark.chime;
 
 import android.content.Context;
+import android.content.res.AssetFileDescriptor;
 import android.media.AudioAttributes;
+import android.media.AudioFocusRequest;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.PowerManager;
 
@@ -27,40 +30,54 @@ final class Player {
 
     static void play(Context context, final Runnable done) {
         final Context app = context.getApplicationContext();
+        final AudioManager audio = (AudioManager) app.getSystemService(Context.AUDIO_SERVICE);
+        if (audio != null) {
+            int mode = audio.getMode();
+            if (mode == AudioManager.MODE_IN_CALL || mode == AudioManager.MODE_IN_COMMUNICATION) {
+                finish(done);
+                return;
+            }
+        }
+
         final PowerManager pm = (PowerManager) app.getSystemService(Context.POWER_SERVICE);
         final PowerManager.WakeLock lock;
         if (pm != null) {
             lock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "hourmark:chime");
             lock.setReferenceCounted(false);
-            lock.acquire(8000L);
+            lock.acquire(10000L);
         } else {
             lock = null;
         }
+
+        final AudioAttributes attrs = new AudioAttributes.Builder()
+                .setUsage(AudioAttributes.USAGE_ALARM)
+                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                .build();
+        final AudioFocusRequest focus = new AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK)
+                .setAudioAttributes(attrs)
+                .build();
+        if (audio != null) {
+            audio.requestAudioFocus(focus);
+        }
+
         try {
             final MediaPlayer player = new MediaPlayer();
-            android.content.res.AssetFileDescriptor fd = app.getResources().openRawResourceFd(R.raw.chime);
-            player.setAudioAttributes(new AudioAttributes.Builder()
-                    .setUsage(AudioAttributes.USAGE_ALARM)
-                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                    .build());
+            AssetFileDescriptor fd = app.getResources().openRawResourceFd(Prefs.soundRes(app));
+            player.setAudioAttributes(attrs);
             player.setDataSource(fd.getFileDescriptor(), fd.getStartOffset(), fd.getLength());
             fd.close();
             player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
-                    release(mp, lock);
-                    if (done != null) {
-                        done.run();
-                    }
+                    release(mp, lock, audio, focus);
+                    finish(done);
                 }
             });
             player.setOnErrorListener(new MediaPlayer.OnErrorListener() {
                 @Override
                 public boolean onError(MediaPlayer mp, int what, int extra) {
-                    release(mp, lock);
-                    if (done != null) {
-                        done.run();
-                    }
+                    release(mp, lock, audio, focus);
+                    finish(done);
                     return true;
                 }
             });
@@ -70,19 +87,29 @@ final class Player {
             if (lock != null && lock.isHeld()) {
                 lock.release();
             }
-            if (done != null) {
-                done.run();
+            if (audio != null) {
+                audio.abandonAudioFocusRequest(focus);
             }
+            finish(done);
         }
     }
 
-    private static void release(MediaPlayer player, PowerManager.WakeLock lock) {
+    private static void finish(Runnable done) {
+        if (done != null) {
+            done.run();
+        }
+    }
+
+    private static void release(MediaPlayer player, PowerManager.WakeLock lock, AudioManager audio, AudioFocusRequest focus) {
         try {
             player.release();
         } catch (Exception ignored) {
         }
         if (lock != null && lock.isHeld()) {
             lock.release();
+        }
+        if (audio != null && focus != null) {
+            audio.abandonAudioFocusRequest(focus);
         }
     }
 }

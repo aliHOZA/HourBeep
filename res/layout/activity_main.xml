@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
@@ -49,6 +50,45 @@
             android:textColor="#E8F0E6"
             android:textSize="18sp" />
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@string/sound"
+            android:textColor="#8A9388"
+            android:textSize="14sp" />
+
+        <RadioGroup
+            android:id="@+id/sounds"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp">
+
+            <RadioButton
+                android:id="@+id/sound_soft"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/sound_soft"
+                android:textColor="#E8F0E6"
+                android:textSize="18sp" />
+
+            <RadioButton
+                android:id="@+id/sound_casio"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/sound_casio"
+                android:textColor="#E8F0E6"
+                android:textSize="18sp" />
+
+            <RadioButton
+                android:id="@+id/sound_cuckoo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/sound_cuckoo"
+                android:textColor="#E8F0E6"
+                android:textSize="18sp" />
+        </RadioGroup>
+
         <Switch
             android:id="@+id/quiet"
             android:layout_width="match_parent"
@@ -87,6 +127,14 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:text="@string/test"
+            android:textAllCaps="false" />
+
+        <Button
+            android:id="@+id/battery"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/battery"
             android:textAllCaps="false" />
 
         <TextView
