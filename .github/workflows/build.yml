@@ -40,17 +40,18 @@ jobs:
         run: |
           "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" "platforms;android-36" "build-tools;34.0.0"
 
-      - name: Install standalone R8 launcher expected by build.sh
+      - name: Install standalone R8 launcher
         run: |
-          mkdir -p "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin" "$RUNNER_TEMP/r8"
+          mkdir -p "$RUNNER_TEMP/r8"
           curl --fail --location --retry 3 \
             https://dl.google.com/dl/android/maven2/com/android/tools/r8/8.3.37/r8-8.3.37.jar \
             --output "$RUNNER_TEMP/r8/r8.jar"
-          cat > "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/r8" <<'EOF'
+          cat > "$RUNNER_TEMP/r8/r8" <<'EOF'
           #!/bin/sh
           exec java -cp "$RUNNER_TEMP/r8/r8.jar" com.android.tools.r8.R8 "$@"
           EOF
-          chmod +x "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/r8"
+          chmod +x "$RUNNER_TEMP/r8/r8"
+          echo "R8=$RUNNER_TEMP/r8/r8" >> "$GITHUB_ENV"
 
       - name: Build unsigned APK
         run: sh build.sh
