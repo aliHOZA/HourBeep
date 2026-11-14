@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">بوق ساعت</string>
+    <string name="chime_switch">بوق در راس هر ساعت</string>
+    <string name="quiet_switch">ساعت سکوت</string>
+    <string name="from">از</string>
+    <string name="until">تا</string>
+    <string name="test">آزمایش بوق</string>
+    <string name="next_off">بوق خاموش است</string>
+    <string name="next_at">بوق بعدی: %1$s</string>
+    <string name="exact_off">زنگ دقیق مسدود است. برای اجازه دادن لمس کنید، وگرنه بوق ممکن است دیر پخش شود.</string>
+    <string name="hint">یک بوق کوتاه در راس هر ساعت، با بلندی صدای زنگ. هیچ چیزی از گوشی خارج نمی‌شود.</string>
+</resources>

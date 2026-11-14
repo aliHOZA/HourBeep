@@ -1,0 +1,3 @@
+-keep class dev.hourmark.chime.MainActivity { <init>(); }
+-keep class dev.hourmark.chime.ChimeReceiver { <init>(); }
+-keep class dev.hourmark.chime.BootReceiver { <init>(); }

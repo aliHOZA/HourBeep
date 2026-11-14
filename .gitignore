@@ -1,0 +1,8 @@
+unsigned.apk
+classes.dex
+classes.jar
+classes/
+dex/
+compiled/
+gen/
+*.keystore

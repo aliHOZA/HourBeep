@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Hour Beep</string>
+    <string name="chime_switch">Beep every hour</string>
+    <string name="quiet_switch">Quiet hours</string>
+    <string name="from">From</string>
+    <string name="until">Until</string>
+    <string name="test">Test beep</string>
+    <string name="next_off">Chime is off</string>
+    <string name="next_at">Next beep: %1$s</string>
+    <string name="exact_off">Exact alarms are blocked. Tap to allow them, or the beep can be late.</string>
+    <string name="hint">One short beep at the top of each hour, on the alarm volume. Nothing is sent off the phone.</string>
+</resources>
