@@ -4,7 +4,7 @@ set -e
 SDK="${ANDROID_SDK_ROOT:-$HOME/Android/Sdk}"
 AAPT="$SDK/build-tools/34.0.0/aapt2"
 JAR="$SDK/platforms/android-36/android.jar"
-R8="$SDK/cmdline-tools/latest/bin/r8"
+R8="${R8:-$SDK/cmdline-tools/latest/bin/r8}"
 ROOT="$(CDPATH= cd -- "$(dirname "$0")" && pwd)"
 cd "$ROOT"
 rm -rf compiled gen classes dex unsigned.apk classes.dex classes.jar
