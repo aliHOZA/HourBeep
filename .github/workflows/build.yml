@@ -1,0 +1,64 @@
+name: Build Hour Beep
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'AndroidManifest.xml'
+      - 'build.sh'
+      - 'proguard-rules.pro'
+      - 'res/**'
+      - 'src/**'
+      - '.github/workflows/build.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android platform and build tools
+        run: |
+          sdkmanager "platforms;android-36" "build-tools;34.0.0"
+
+      - name: Install standalone R8 launcher expected by build.sh
+        run: |
+          mkdir -p "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin" "$RUNNER_TEMP/r8"
+          curl --fail --location --retry 3 \
+            https://dl.google.com/dl/android/maven2/com/android/tools/r8/8.3.37/r8-8.3.37.jar \
+            --output "$RUNNER_TEMP/r8/r8.jar"
+          cat > "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/r8" <<'EOF'
+          #!/bin/sh
+          exec java -cp "$RUNNER_TEMP/r8/r8.jar" com.android.tools.r8.R8 "$@"
+          EOF
+          chmod +x "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/r8"
+
+      - name: Build unsigned APK
+        run: sh build.sh
+
+      - name: Package source snapshot
+        run: git archive --format=zip --output=HourBeep-1.2-source.zip HEAD
+
+      - name: Upload APK and source
+        uses: actions/upload-artifact@v4
+        with:
+          name: HourBeep-1.2-build
+          path: |
+            unsigned.apk
+            HourBeep-1.2-source.zip
+          if-no-files-found: error
+          retention-days: 30
