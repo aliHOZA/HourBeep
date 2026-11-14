@@ -73,10 +73,10 @@
                 android:textSize="18sp" />
 
             <RadioButton
-                android:id="@+id/sound_casio"
+                android:id="@+id/sound_beep_beep"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/sound_casio"
+                android:text="@string/sound_beep_beep"
                 android:textColor="#E8F0E6"
                 android:textSize="18sp" />
 
@@ -85,6 +85,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/sound_cuckoo"
+                android:textColor="#E8F0E6"
+                android:textSize="18sp" />
+            <RadioButton
+                android:id="@+id/sound_casio"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/sound_casio"
                 android:textColor="#E8F0E6"
                 android:textSize="18sp" />
         </RadioGroup>

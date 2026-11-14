@@ -29,7 +29,9 @@ final class Prefs {
     static final String SOUND = "sound";
 
     static final String SOUND_SOFT = "soft";
+    static final String SOUND_BEEP_BEEP = "beep_beep";
     static final String SOUND_CASIO = "casio";
+    private static final String SOUND_MIGRATED = "sound_migrated";
     static final String SOUND_CUCKOO = "cuckoo";
 
     private Prefs() {}
@@ -55,7 +57,16 @@ final class Prefs {
     }
 
     static String sound(Context context) {
-        return get(context).getString(SOUND, SOUND_CASIO);
+        SharedPreferences prefs = get(context);
+        if (!prefs.getBoolean(SOUND_MIGRATED, false)) {
+            SharedPreferences.Editor editor = prefs.edit()
+                    .putBoolean(SOUND_MIGRATED, true);
+            if (SOUND_CASIO.equals(prefs.getString(SOUND, null))) {
+                editor.putString(SOUND, SOUND_BEEP_BEEP);
+            }
+            editor.apply();
+        }
+        return prefs.getString(SOUND, SOUND_BEEP_BEEP);
     }
 
     static int soundRes(Context context) {
@@ -65,6 +76,9 @@ final class Prefs {
         }
         if (SOUND_SOFT.equals(id)) {
             return R.raw.chime;
+        }
+        if (SOUND_BEEP_BEEP.equals(id)) {
+            return R.raw.beep_beep;
         }
         return R.raw.casio;
     }

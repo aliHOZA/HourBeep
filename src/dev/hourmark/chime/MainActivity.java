@@ -245,7 +245,10 @@ public class MainActivity extends android.app.Activity {
         if (Prefs.SOUND_SOFT.equals(sound)) {
             return R.id.sound_soft;
         }
-        return R.id.sound_casio;
+        if (Prefs.SOUND_CASIO.equals(sound)) {
+            return R.id.sound_casio;
+        }
+        return R.id.sound_beep_beep;
     }
 
     private static String soundFor(int checkedId) {
@@ -255,6 +258,9 @@ public class MainActivity extends android.app.Activity {
         if (checkedId == R.id.sound_soft) {
             return Prefs.SOUND_SOFT;
         }
-        return Prefs.SOUND_CASIO;
+        if (checkedId == R.id.sound_casio) {
+            return Prefs.SOUND_CASIO;
+        }
+        return Prefs.SOUND_BEEP_BEEP;
     }
 }
