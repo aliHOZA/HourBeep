@@ -23,9 +23,15 @@ import android.media.AudioAttributes;
 import android.media.AudioFocusRequest;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.PowerManager;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 final class Player {
+    private static final long GIVE_UP_MS = 5000L;
+
     private Player() {}
 
     static void play(Context context, final Runnable done) {
@@ -60,69 +66,98 @@ final class Player {
             audio.requestAudioFocus(focus);
         }
 
-        MediaPlayer player = null;
+        final float gain = Prefs.volume(app) / 100f;
+        final AtomicBoolean once = new AtomicBoolean(false);
+        final Handler handler = new Handler(Looper.getMainLooper());
+        final MediaPlayer[] held = new MediaPlayer[1];
+        final Runnable giveUp = new Runnable() {
+            @Override
+            public void run() {
+                finishOnce(once, handler, null, held, lock, audio, focus, done);
+            }
+        };
+        handler.postDelayed(giveUp, GIVE_UP_MS);
+
+        AssetFileDescriptor fd = null;
         try {
-            player = new MediaPlayer();
-            final MediaPlayer playing = player;
-            AssetFileDescriptor fd = app.getResources().openRawResourceFd(Prefs.soundRes(app));
-            playing.setAudioAttributes(attrs);
-            playing.setDataSource(fd.getFileDescriptor(), fd.getStartOffset(), fd.getLength());
+            MediaPlayer player = new MediaPlayer();
+            held[0] = player;
+            fd = app.getResources().openRawResourceFd(Prefs.soundRes(app));
+            player.setAudioAttributes(attrs);
+            player.setDataSource(fd.getFileDescriptor(), fd.getStartOffset(), fd.getLength());
             fd.close();
-            playing.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            fd = null;
+            player.setVolume(gain, gain);
+            player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
-                    release(mp, lock, audio, focus);
-                    finish(done);
+                    finishOnce(once, handler, giveUp, held, lock, audio, focus, done);
                 }
             });
-            playing.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+            player.setOnErrorListener(new MediaPlayer.OnErrorListener() {
                 @Override
                 public boolean onError(MediaPlayer mp, int what, int extra) {
-                    release(mp, lock, audio, focus);
-                    finish(done);
+                    finishOnce(once, handler, giveUp, held, lock, audio, focus, done);
                     return true;
                 }
             });
-            playing.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            player.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
+                    if (once.get()) {
+                        return;
+                    }
+                    mp.setVolume(gain, gain);
                     mp.start();
                 }
             });
-            playing.prepareAsync();
+            player.prepareAsync();
         } catch (Exception error) {
-            if (player != null) {
+            if (fd != null) {
                 try {
-                    player.release();
+                    fd.close();
                 } catch (Exception ignored) {
                 }
             }
-            if (lock != null && lock.isHeld()) {
-                lock.release();
-            }
-            if (audio != null) {
-                audio.abandonAudioFocusRequest(focus);
-            }
-            finish(done);
+            finishOnce(once, handler, giveUp, held, lock, audio, focus, done);
         }
     }
 
-    private static void finish(Runnable done) {
-        if (done != null) {
-            done.run();
+    private static void finishOnce(
+            AtomicBoolean once,
+            Handler handler,
+            Runnable giveUp,
+            MediaPlayer[] held,
+            PowerManager.WakeLock lock,
+            AudioManager audio,
+            AudioFocusRequest focus,
+            Runnable done) {
+        if (!once.compareAndSet(false, true)) {
+            return;
         }
-    }
-
-    private static void release(MediaPlayer player, PowerManager.WakeLock lock, AudioManager audio, AudioFocusRequest focus) {
-        try {
-            player.release();
-        } catch (Exception ignored) {
+        if (giveUp != null) {
+            handler.removeCallbacks(giveUp);
+        }
+        MediaPlayer player = held[0];
+        held[0] = null;
+        if (player != null) {
+            try {
+                player.release();
+            } catch (Exception ignored) {
+            }
         }
         if (lock != null && lock.isHeld()) {
             lock.release();
         }
         if (audio != null && focus != null) {
             audio.abandonAudioFocusRequest(focus);
+        }
+        finish(done);
+    }
+
+    private static void finish(Runnable done) {
+        if (done != null) {
+            done.run();
         }
     }
 }

@@ -32,6 +32,7 @@ import android.view.WindowInsets;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.RadioGroup;
+import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -72,10 +73,12 @@ public class MainActivity extends android.app.Activity {
         battery = findViewById(R.id.battery);
         sounds = findViewById(R.id.sounds);
         Button test = findViewById(R.id.test);
+        SeekBar volume = findViewById(R.id.volume);
 
         enabled.setChecked(Prefs.enabled(this));
         quiet.setChecked(Prefs.quiet(this));
         sounds.check(radioFor(Prefs.sound(this)));
+        volume.setProgress(Prefs.volume(this));
 
         enabled.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -97,6 +100,22 @@ public class MainActivity extends android.app.Activity {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 Prefs.get(MainActivity.this).edit().putString(Prefs.SOUND, soundFor(checkedId)).apply();
+            }
+        });
+        volume.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar bar, int progress, boolean fromUser) {
+                if (fromUser) {
+                    Prefs.get(MainActivity.this).edit().putInt(Prefs.VOLUME, progress).apply();
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar bar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar bar) {
             }
         });
         start.setOnClickListener(new View.OnClickListener() {

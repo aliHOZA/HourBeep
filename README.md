@@ -14,7 +14,8 @@ You should have received a copy of the GNU General Public License along with thi
 
 - **1.0** (`v1.0`) is the first release: one soft beep, quiet hours, exact alarms.
 - **1.1** (`v1.1`) adds the original double beep, a cuckoo, audio ducking, and a battery-exemption button.
-- **1.2** (`v1.2`, current) adds the real Casio recording and stores every sound as Ogg Vorbis. Both ends of a quiet-hours range are silent.
+- **1.2** (`v1.2`) adds the real Casio recording and stores the short sounds as Ogg Vorbis. Both ends of a quiet-hours range are silent.
+- **1.3** (`v1.3`, current) restores the original cuckoo, adds a loudness slider, and keeps an upgraded install on Beep Beep until the listener picks Casio.
 
 The installable APK for each version is attached to that GitHub release. The private signing key is not in this repository. An APK you build and sign yourself will not update over a copy installed from the releases, unless you sign it with the same key.
 
@@ -24,10 +25,10 @@ The installable APK for each version is attached to that GitHub release. The pri
 | --- | --- | --- |
 | Soft / نرم | `chime.ogg` | the original tone |
 | Beep Beep / بیپ بیپ | `beep_beep.ogg` | the short digital double beep from 1.1 |
-| Cuckoo / کو کو | `cuckoo.ogg` | two descending notes |
+| Cuckoo / کو کو | `cuckoo.wav` | two descending notes, the original file |
 | Casio / کاسیو | `casio.ogg` | the separate watch recording, default on a fresh install |
 
-The four sounds together are 28,777 bytes of mono Vorbis. The same audio as WAV was 99,544 bytes, about 71 percent larger. Casio stays at 44.1 kHz with its peak at −1 dBFS, because its metallic attack has energy well above 10 kHz. A 1.1 selection stored as `casio` is migrated to Beep Beep, so an existing install does not change sound by surprise.
+The three short Ogg files are 23,281 bytes. The cuckoo stays the original 38,852-byte WAV, because the Vorbis copy sounded thinner. A fresh install defaults to Casio. An update from an older install that never picked a sound keeps Beep Beep, which is what that install was already playing.
 
 Quiet hours include both endpoints. From 22:00 to 07:00, the 22:00 chime and the 07:00 chime are both silent. The next chime is 08:00.
 
@@ -48,5 +49,5 @@ export ANDROID_SDK_ROOT="$HOME/Android/Sdk"
 sh build.sh
 ```
 
-The script compiles resources, links them with Ogg left uncompressed, dexes with R8, then runs `zipalign`. It writes `unsigned.apk` (versionCode 3, versionName 1.2). Sign that file with your own key. Tapping the system alarm icon opens the app. The chime itself is a separate broadcast.
+The script compiles resources, links them with Ogg and WAV left uncompressed, dexes with R8, then runs `zipalign`. It writes `unsigned.apk` (versionCode 4, versionName 1.3). Sign that file with your own key. Tapping the system alarm icon opens the app. The chime itself is a separate broadcast. The loudness slider scales this app's chime against the phone's alarm volume. It does not change the system alarm volume.
 

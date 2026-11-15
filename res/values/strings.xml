@@ -14,6 +14,7 @@
     <string name="sound_beep_beep">Beep Beep</string>
     <string name="sound_cuckoo">Cuckoo</string>
     <string name="sound_casio">Casio</string>
+    <string name="volume">Chime loudness</string>
     <string name="battery">Unrestrict battery</string>
-    <string name="hint">One short sound at the top of each hour, on the alarm volume. Music ducks for a moment. Nothing is sent off the phone. If a beep is missed after the screen has been off all day, tap Unrestrict battery.</string>
+    <string name="hint">One short sound at the top of each hour, on the alarm volume. The slider turns that down for this app only. Music ducks for a moment. Nothing is sent off the phone. Quiet hours include both the start and the end. If a beep is missed after the screen has been off all day, tap Unrestrict battery.</string>
 </resources>

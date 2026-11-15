@@ -96,6 +96,24 @@
                 android:textSize="18sp" />
         </RadioGroup>
 
+        <TextView
+            android:id="@+id/volume_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/volume"
+            android:textColor="#8A9388"
+            android:textSize="14sp" />
+
+        <SeekBar
+            android:id="@+id/volume"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:max="100"
+            android:progressTint="#E2B657"
+            android:thumbTint="#E2B657" />
+
         <Switch
             android:id="@+id/quiet"
             android:layout_width="match_parent"
