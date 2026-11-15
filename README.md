@@ -14,26 +14,39 @@ You should have received a copy of the GNU General Public License along with thi
 
 - **1.0** (`v1.0`) is the first release: one soft beep, quiet hours, exact alarms.
 - **1.1** (`v1.1`) adds the original double beep, a cuckoo, audio ducking, and a battery-exemption button.
-- **1.2** (`v1.2`, current) adds four selectable sounds: Soft, Beep Beep, Cuckoo, and the separate Casio recording.
+- **1.2** (`v1.2`, current) adds the real Casio recording and stores every sound as Ogg Vorbis. Both ends of a quiet-hours range are silent.
 
 The installable APK for each version is attached to that GitHub release. The private signing key is not in this repository. An APK you build and sign yourself will not update over a copy installed from the releases, unless you sign it with the same key.
 
 ## Sounds
 
-- Soft: the original tone (`chime.wav`)
-- Beep Beep: the existing short digital double beep (`beep_beep.wav`)
-- Cuckoo: two descending notes (`cuckoo.wav`)
-- Casio: the separate Casio watch recording (`casio.wav`)
+| Name | File | Role |
+| --- | --- | --- |
+| Soft / نرم | `chime.ogg` | the original tone |
+| Beep Beep / بیپ بیپ | `beep_beep.ogg` | the short digital double beep from 1.1 |
+| Cuckoo / کو کو | `cuckoo.ogg` | two descending notes |
+| Casio / کاسیو | `casio.ogg` | the separate watch recording, default on a fresh install |
 
-The Casio recording is resampled from 44.1 kHz to 22.05 kHz mono PCM at 16-bit, preserving its full duration while reducing its WAV size by about 51%. Existing 1.1 Casio selections are migrated to Beep Beep so their sound does not unexpectedly change.
+The four sounds together are 28,777 bytes of mono Vorbis. The same audio as WAV was 99,544 bytes, about 71 percent larger. Casio stays at 44.1 kHz with its peak at −1 dBFS, because its metallic attack has energy well above 10 kHz. A 1.1 selection stored as `casio` is migrated to Beep Beep, so an existing install does not change sound by surprise.
+
+Quiet hours include both endpoints. From 22:00 to 07:00, the 22:00 chime and the 07:00 chime are both silent. The next chime is 08:00.
 
 ## Build
 
-Install Android SDK platform 36 and build-tools 34, then:
+`build.sh` is the whole build. There is no Gradle project and no third-party library.
+
+| Tool | Expected location |
+| --- | --- |
+| JDK 11 or newer | `javac` on `PATH` |
+| Python 3 | `python3` on `PATH` |
+| Android platform 36 | `$ANDROID_SDK_ROOT/platforms/android-36/android.jar` |
+| build-tools 34.0.0 | `$ANDROID_SDK_ROOT/build-tools/34.0.0/aapt2` and `zipalign` |
+| R8 | `$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/r8`, or `$R8` |
 
 ```sh
 export ANDROID_SDK_ROOT="$HOME/Android/Sdk"
 sh build.sh
 ```
 
-Sign `unsigned.apk` with your own key.
+The script compiles resources, links them with Ogg left uncompressed, dexes with R8, then runs `zipalign`. It writes `unsigned.apk` (versionCode 3, versionName 1.2). Sign that file with your own key. Tapping the system alarm icon opens the app. The chime itself is a separate broadcast.
+

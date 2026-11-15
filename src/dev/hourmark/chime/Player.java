@@ -60,20 +60,22 @@ final class Player {
             audio.requestAudioFocus(focus);
         }
 
+        MediaPlayer player = null;
         try {
-            final MediaPlayer player = new MediaPlayer();
+            player = new MediaPlayer();
+            final MediaPlayer playing = player;
             AssetFileDescriptor fd = app.getResources().openRawResourceFd(Prefs.soundRes(app));
-            player.setAudioAttributes(attrs);
-            player.setDataSource(fd.getFileDescriptor(), fd.getStartOffset(), fd.getLength());
+            playing.setAudioAttributes(attrs);
+            playing.setDataSource(fd.getFileDescriptor(), fd.getStartOffset(), fd.getLength());
             fd.close();
-            player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            playing.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
                     release(mp, lock, audio, focus);
                     finish(done);
                 }
             });
-            player.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+            playing.setOnErrorListener(new MediaPlayer.OnErrorListener() {
                 @Override
                 public boolean onError(MediaPlayer mp, int what, int extra) {
                     release(mp, lock, audio, focus);
@@ -81,9 +83,20 @@ final class Player {
                     return true;
                 }
             });
-            player.prepare();
-            player.start();
+            playing.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
+            playing.prepareAsync();
         } catch (Exception error) {
+            if (player != null) {
+                try {
+                    player.release();
+                } catch (Exception ignored) {
+                }
+            }
             if (lock != null && lock.isHeld()) {
                 lock.release();
             }

@@ -55,13 +55,10 @@ final class Scheduler {
     }
 
     static boolean inQuiet(int minuteOfDay, int start, int end) {
-        if (start == end) {
-            return false;
+        if (start <= end) {
+            return minuteOfDay >= start && minuteOfDay <= end;
         }
-        if (start < end) {
-            return minuteOfDay >= start && minuteOfDay < end;
-        }
-        return minuteOfDay >= start || minuteOfDay < end;
+        return minuteOfDay >= start || minuteOfDay <= end;
     }
 
     static void schedule(Context context) {

@@ -66,7 +66,7 @@ final class Prefs {
             }
             editor.apply();
         }
-        return prefs.getString(SOUND, SOUND_BEEP_BEEP);
+        return prefs.getString(SOUND, SOUND_CASIO);
     }
 
     static int soundRes(Context context) {

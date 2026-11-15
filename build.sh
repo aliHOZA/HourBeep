@@ -1,25 +1,33 @@
 #!/bin/sh
-# Build Hour Beep 1.2. Requires Android SDK build-tools 34 and platform android-36.
+# SPDX-License-Identifier: GPL-3.0-only
+# Build Hour Beep 1.2.
+# Needs: JDK 11 or newer, Python 3, Android SDK platform android-36,
+# build-tools 34.0.0 (aapt2, zipalign), and R8 at cmdline-tools/latest/bin/r8
+# or at the path in $R8.
 set -e
 SDK="${ANDROID_SDK_ROOT:-$HOME/Android/Sdk}"
-AAPT="$SDK/build-tools/34.0.0/aapt2"
+BT="$SDK/build-tools/34.0.0"
+AAPT="$BT/aapt2"
+ZIPALIGN="$BT/zipalign"
 JAR="$SDK/platforms/android-36/android.jar"
 R8="${R8:-$SDK/cmdline-tools/latest/bin/r8}"
 ROOT="$(CDPATH= cd -- "$(dirname "$0")" && pwd)"
 cd "$ROOT"
-rm -rf compiled gen classes dex unsigned.apk classes.dex classes.jar
+rm -rf compiled gen classes dex linked.apk unsigned.apk classes.dex classes.jar
 mkdir -p compiled gen classes dex
 find res -type f | while read -r f; do
   "$AAPT" compile -o compiled/ "$f"
 done
+# ogg must stay uncompressed or MediaPlayer cannot read it from the apk
 "$AAPT" link -I "$JAR" \
+  -0 ogg \
   --manifest AndroidManifest.xml \
   --java gen \
   --min-sdk-version 26 \
   --target-sdk-version 36 \
   --version-code 3 \
   --version-name 1.2 \
-  -o unsigned.apk \
+  -o linked.apk \
   compiled/*
 javac --release 11 -classpath "$JAR" -d classes gen/dev/hourmark/chime/R.java src/dev/hourmark/chime/*.java
 jar cf classes.jar -C classes .
@@ -27,8 +35,9 @@ jar cf classes.jar -C classes .
 cp dex/classes.dex classes.dex
 python3 - << 'PY'
 import zipfile
-with zipfile.ZipFile("unsigned.apk", "a") as z:
+with zipfile.ZipFile("linked.apk", "a") as z:
     z.write("classes.dex", "classes.dex")
 PY
+"$ZIPALIGN" -f 4 linked.apk unsigned.apk
 echo "Built $ROOT/unsigned.apk"
 echo "Sign it with your own keystore. The key used for the release APKs is not published."
