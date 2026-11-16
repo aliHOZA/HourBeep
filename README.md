@@ -10,6 +10,13 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 
 You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
 
+## Donations
+
+The app stays free. If you want to support it:
+
+- [Liberapay](https://liberapay.com/HSNZDH)
+- [Open Collective](https://opencollective.com/hsnzdh)
+
 ## Versions
 
 - **1.0** (`v1.0`) is the first release: one soft beep, quiet hours, exact alarms.
