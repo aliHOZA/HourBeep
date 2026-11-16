@@ -1,6 +1,6 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-3.0-only
-# Build Hour Beep 1.3.
+# Build Hour Beep 1.4.
 # Needs: JDK 11 or newer, Python 3, Android SDK platform android-36,
 # build-tools 34.0.0 (aapt2, zipalign), and R8 at cmdline-tools/latest/bin/r8
 # or at the path in $R8.
@@ -26,8 +26,8 @@ done
   --java gen \
   --min-sdk-version 26 \
   --target-sdk-version 36 \
-  --version-code 4 \
-  --version-name 1.3 \
+  --version-code 5 \
+  --version-name 1.4 \
   -o linked.apk \
   compiled/*
 javac --release 11 -classpath "$JAR" -d classes gen/dev/hourmark/chime/R.java src/dev/hourmark/chime/*.java

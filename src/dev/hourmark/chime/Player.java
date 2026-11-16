@@ -66,7 +66,7 @@ final class Player {
             audio.requestAudioFocus(focus);
         }
 
-        final float gain = Prefs.volume(app) / 100f;
+        final float gain = gainFor(Prefs.volume(app));
         final AtomicBoolean once = new AtomicBoolean(false);
         final Handler handler = new Handler(Looper.getMainLooper());
         final MediaPlayer[] held = new MediaPlayer[1];
@@ -153,6 +153,17 @@ final class Player {
             audio.abandonAudioFocusRequest(focus);
         }
         finish(done);
+    }
+
+    private static float gainFor(int percent) {
+        if (percent <= 0) {
+            return 0f;
+        }
+        if (percent >= 100) {
+            return 1f;
+        }
+        double db = (percent - 100) * 0.4;
+        return (float) Math.pow(10.0, db / 20.0);
     }
 
     private static void finish(Runnable done) {

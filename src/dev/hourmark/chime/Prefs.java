@@ -19,7 +19,6 @@ package dev.hourmark.chime;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
 
 final class Prefs {
     static final String NAME = "hourmark";
@@ -33,8 +32,6 @@ final class Prefs {
     static final String SOUND_SOFT = "soft";
     static final String SOUND_BEEP_BEEP = "beep_beep";
     static final String SOUND_CASIO = "casio";
-    private static final String SOUND_MIGRATED = "sound_migrated";
-    private static final String UPGRADE_SOUND = "upgrade_sound_fixed";
     static final String SOUND_CUCKOO = "cuckoo";
 
     private Prefs() {}
@@ -64,29 +61,7 @@ final class Prefs {
     }
 
     static String sound(Context context) {
-        SharedPreferences prefs = get(context);
-        if (!prefs.getBoolean(UPGRADE_SOUND, false)) {
-            SharedPreferences.Editor editor = prefs.edit().putBoolean(UPGRADE_SOUND, true);
-            String stored = prefs.getString(SOUND, null);
-            boolean openedBefore = prefs.getBoolean(SOUND_MIGRATED, false);
-            if (!openedBefore && SOUND_CASIO.equals(stored)) {
-                editor.putString(SOUND, SOUND_BEEP_BEEP);
-            } else if (stored == null && isUpgrade(context)) {
-                editor.putString(SOUND, SOUND_BEEP_BEEP);
-            }
-            editor.putBoolean(SOUND_MIGRATED, true);
-            editor.apply();
-        }
-        return prefs.getString(SOUND, SOUND_CASIO);
-    }
-
-    private static boolean isUpgrade(Context context) {
-        try {
-            PackageInfo info = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
-            return info.lastUpdateTime - info.firstInstallTime > 15000L;
-        } catch (Exception ignored) {
-            return false;
-        }
+        return get(context).getString(SOUND, SOUND_CASIO);
     }
 
     static int soundRes(Context context) {

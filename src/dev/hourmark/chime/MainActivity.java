@@ -105,9 +105,6 @@ public class MainActivity extends android.app.Activity {
         volume.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar bar, int progress, boolean fromUser) {
-                if (fromUser) {
-                    Prefs.get(MainActivity.this).edit().putInt(Prefs.VOLUME, progress).apply();
-                }
             }
 
             @Override
@@ -116,6 +113,7 @@ public class MainActivity extends android.app.Activity {
 
             @Override
             public void onStopTrackingTouch(SeekBar bar) {
+                Prefs.get(MainActivity.this).edit().putInt(Prefs.VOLUME, bar.getProgress()).apply();
             }
         });
         start.setOnClickListener(new View.OnClickListener() {
