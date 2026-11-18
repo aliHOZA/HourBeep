@@ -1,0 +1,5 @@
+Hour Beep plays one short sound at the top of each hour, in the manner of a Casio watch.
+
+You can choose Soft, Beep Beep, Cuckoo, or a recording of a real Casio chime. Quiet hours are optional. Both the start and the end of that range stay silent. The loudness slider only turns this app down against the phone's alarm volume. It does not change the system alarm volume.
+
+There is no network permission, no account, and no advertising. The source is published under GPL-3.0-only.
