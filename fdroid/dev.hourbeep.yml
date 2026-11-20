@@ -29,7 +29,7 @@ Repo: https://github.com/aliHOZA/HourBeep.git
 Builds:
   - versionName: '1.5'
     versionCode: 1
-    commit: 001563c36b0bcefdb1e2bc9cfae04b3fed0cd0a3
+    commit: e83aea4834a809020432b47bffbd536ad59610eb
     sudo:
       - apt-get update
       - apt-get install -y --no-install-recommends openjdk-17-jdk-headless python3
