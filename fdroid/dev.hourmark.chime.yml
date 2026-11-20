@@ -27,9 +27,9 @@ RepoType: git
 Repo: https://github.com/aliHOZA/HourBeep.git
 
 Builds:
-  - versionName: '1.4'
-    versionCode: 5
-    commit: 813dcf128f20a06a11a9ccd0dd2eec3dc42869aa
+  - versionName: '1.4.9'
+    versionCode: 6
+    commit: 4b00fd72a551d771c06d007ddffa7b72b766535c
     sudo:
       - apt-get update
       - apt-get install -y --no-install-recommends openjdk-17-jdk-headless python3
@@ -57,10 +57,10 @@ MaintainerNotes: |-
   There is no Gradle project. build.sh calls aapt2, javac and R8, and writes
   unsigned.apk in the repository root. versionCode and versionName live in
   that script. The files in res/raw are the chime sounds, not third-party code.
-  Tag v1.4 is commit 813dcf128f20a06a11a9ccd0dd2eec3dc42869aa.
+  Tag v1.4.9 is commit 4b00fd72a551d771c06d007ddffa7b72b766535c.
 
 AutoUpdateMode: Version
 UpdateCheckMode: 'Tags v[\d.]+$'
 UpdateCheckData: 'build.sh|--version-code (\d+)|.|--version-name ([\d.]+)'
-CurrentVersion: '1.4'
-CurrentVersionCode: 5
+CurrentVersion: '1.4.9'
+CurrentVersionCode: 6
