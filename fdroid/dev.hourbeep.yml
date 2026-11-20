@@ -1,0 +1,66 @@
+Categories:
+  - Clock
+  - Alarm Clock
+License: GPL-3.0-only
+AuthorName: ali HOSSEINZADEH
+AuthorWebSite: https://alihoza.github.io/
+SourceCode: https://github.com/aliHOZA/HourBeep
+IssueTracker: https://github.com/aliHOZA/HourBeep/issues
+Changelog: https://github.com/aliHOZA/HourBeep/releases
+Liberapay: HSNZDH
+OpenCollective: hsnzdh
+
+Summary: Hourly chime with quiet hours, and no network access
+Description: |-
+  Hour Beep plays one short sound at the top of each hour, in the manner of
+  a Casio watch.
+
+  You can choose Soft, Beep Beep, Cuckoo, or a recording of a real Casio
+  chime. Quiet hours are optional. Both the start and the end of that range
+  stay silent. The loudness slider only turns this app down against the
+  phone's alarm volume. It does not change the system alarm volume.
+
+  There is no network permission, no account, and no advertising. The source
+  is published under GPL-3.0-only.
+
+RepoType: git
+Repo: https://github.com/aliHOZA/HourBeep.git
+
+Builds:
+  - versionName: '1.5'
+    versionCode: 1
+    commit: 001563c36b0bcefdb1e2bc9cfae04b3fed0cd0a3
+    sudo:
+      - apt-get update
+      - apt-get install -y --no-install-recommends openjdk-17-jdk-headless python3
+    build:
+      - |
+        set -eu
+        SDK="$$SDK$$"
+        export ANDROID_SDK_ROOT="$$SDK$$"
+        if [ -x "$$SDK$$/cmdline-tools/latest/bin/sdkmanager" ]; then
+          "$$SDK$$/cmdline-tools/latest/bin/sdkmanager" --sdk_root="$$SDK$$" "platforms;android-36" "build-tools;34.0.0"
+        elif command -v sdkmanager >/dev/null 2>&1; then
+          sdkmanager "platforms;android-36" "build-tools;34.0.0"
+        else
+          "$$SDK$$/tools/bin/sdkmanager" "platforms;android-36" "build-tools;34.0.0"
+        fi
+        if [ ! -x "$$SDK$$/cmdline-tools/latest/bin/r8" ]; then
+          mkdir -p "$$SDK$$/cmdline-tools/latest/bin"
+          printf '%s\n' '#!/bin/sh' "exec java -cp \"$$SDK$$/build-tools/34.0.0/lib/d8.jar\" com.android.tools.r8.R8 \"\$@\"" > "$$SDK$$/cmdline-tools/latest/bin/r8"
+          chmod 755 "$$SDK$$/cmdline-tools/latest/bin/r8"
+        fi
+        sh build.sh
+    output: unsigned.apk
+
+MaintainerNotes: |-
+  There is no Gradle project. build.sh calls aapt2, javac and R8, and writes
+  unsigned.apk in the repository root. versionCode and versionName live in
+  that script. Application ID is dev.hourbeep (renamed from dev.hourmark.chime
+  in 1.5). The files in res/raw are the chime sounds, not third-party code.
+
+AutoUpdateMode: Version
+UpdateCheckMode: 'Tags v[\d.]+$'
+UpdateCheckData: 'build.sh|--version-code (\d+)|.|--version-name ([\d.]+)'
+CurrentVersion: '1.5'
+CurrentVersionCode: 1
