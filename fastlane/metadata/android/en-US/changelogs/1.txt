@@ -1,0 +1,1 @@
+New Application ID: dev.hourbeep. Reinstall required; does not update over 1.4.x. Same features as 1.4.9.
