@@ -23,7 +23,8 @@ The app stays free. If you want to support it:
 - **1.1** (`v1.1`) adds the original double beep, a cuckoo, audio ducking, and a battery-exemption button.
 - **1.2** (`v1.2`) adds the real Casio recording and stores the short sounds as Ogg Vorbis. Both ends of a quiet-hours range are silent.
 - **1.3** (`v1.3`) restores the original cuckoo and adds a loudness slider.
-- **1.4** (`v1.4`, current) drops the sound-migration code. The slider is logarithmic and saves when the finger lifts.
+- **1.4** (`v1.4`) drops the sound-migration code. The slider is logarithmic and saves when the finger lifts.
+- **1.4.9** (`v1.4.9`, current) keeps that behavior and replaces the icon with the dial that reads hour and beep.
 
 The installable APK for each version is attached to that GitHub release. The private signing key is not in this repository. An APK you build and sign yourself will not update over a copy installed from the releases, unless you sign it with the same key.
 
@@ -57,5 +58,5 @@ export ANDROID_SDK_ROOT="$HOME/Android/Sdk"
 sh build.sh
 ```
 
-The script compiles resources, links them with Ogg and WAV left uncompressed, dexes with R8, then runs `zipalign`. It writes `unsigned.apk` (versionCode 5, versionName 1.4). Sign that file with your own key. Tapping the system alarm icon opens the app. The chime itself is a separate broadcast. The loudness slider scales this app's chime against the phone's alarm volume. It does not change the system alarm volume.
+The script compiles resources, links them with Ogg and WAV left uncompressed, dexes with R8, then runs `zipalign`. It writes `unsigned.apk` (versionCode 6, versionName 1.4.9). Sign that file with your own key. Tapping the system alarm icon opens the app. The chime itself is a separate broadcast. The loudness slider scales this app's chime against the phone's alarm volume. It does not change the system alarm volume.
 
