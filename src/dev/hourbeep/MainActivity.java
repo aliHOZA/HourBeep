@@ -17,6 +17,7 @@
 
 package dev.hourbeep;
 
+import android.app.AlertDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.net.Uri;
@@ -144,6 +145,12 @@ public class MainActivity extends android.app.Activity {
             @Override
             public void onClick(View v) {
                 askBattery();
+            }
+        });
+        findViewById(R.id.about).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showAbout();
             }
         });
         Scheduler.schedule(this);
@@ -279,5 +286,13 @@ public class MainActivity extends android.app.Activity {
             return Prefs.SOUND_CASIO;
         }
         return Prefs.SOUND_BEEP_BEEP;
+    }
+
+    private void showAbout() {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.about_title)
+                .setMessage(R.string.about_body)
+                .setPositiveButton(android.R.string.ok, null)
+                .show();
     }
 }
