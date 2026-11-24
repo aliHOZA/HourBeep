@@ -17,7 +17,7 @@
     <string name="volume">Chime loudness</string>
     <string name="battery">Unrestrict battery</string>
     <string name="about">About</string>
-    <string name="about_title">About HourBeep</string>
-    <string name="about_body">HourBeep is a small hourly chime, in the manner of a Casio watch.\n\nDeveloper: ali HOSSEINZADEH\n\nWhat it does\n• Plays one short sound at the top of each hour\n• Optional quiet hours (both ends stay silent)\n• Soft, Beep Beep, Cuckoo, or a real Casio recording\n• Loudness slider for this app only\n\nPrivacy\n• No network permission\n• No ads, no analytics, no accounts\n• Nothing is sent off the phone\n• Source is GPL-3.0-only on GitHub</string>
+    <string name="about_title">About</string>
+    <string name="about_body">HourBeep is a compact hourly chime designed in the manner of a classic Casio watch.\n\nDeveloper\nali HOSSEINZADEH\n\nFeatures\n• A short sound at the top of each hour\n• Optional quiet hours, with both ends of the range remaining silent\n• Choice of Soft, Beep Beep, Cuckoo, or a recording of a Casio watch\n• An independent loudness control that affects only this application\n\nPrivacy\n• No network permission is requested\n• No advertising, analytics, or user accounts\n• No data is transmitted from the device\n• The complete source code is published under the GNU GPL version 3</string>
     <string name="hint">One short sound at the top of each hour, on the alarm volume. The slider turns that down for this app only. Music ducks for a moment. Nothing is sent off the phone. Quiet hours include both the start and the end. If a beep is missed after the screen has been off all day, tap Unrestrict battery.</string>
 </resources>
