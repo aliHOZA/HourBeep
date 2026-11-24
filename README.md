@@ -24,7 +24,9 @@ The app stays free. If you want to support it:
 - **1.2** (`v1.2`) adds the real Casio recording and stores the short sounds as Ogg Vorbis. Both ends of a quiet-hours range are silent.
 - **1.3** (`v1.3`) restores the original cuckoo and adds a loudness slider.
 - **1.4** (`v1.4`) drops the sound-migration code. The slider is logarithmic and saves when the finger lifts.
-- **1.4.9** (`v1.4.9`, current) keeps that behavior and replaces the icon with the dial that reads hour and beep.
+- **1.4.9** (`v1.4.9`) keeps that behavior and replaces the icon with the dial that reads hour and beep.
+- **1.5** (`v1.5`) changes the Application ID to `dev.hourbeep`. It does not update over 1.4.x installs.
+- **1.6** (`v1.6`, current) adds a formal About dialog with developer name, features, and privacy.
 
 The installable APK for each version is attached to that GitHub release. The private signing key is not in this repository. An APK you build and sign yourself will not update over a copy installed from the releases, unless you sign it with the same key.
 
@@ -37,26 +39,8 @@ The installable APK for each version is attached to that GitHub release. The pri
 | Cuckoo / کو کو | `cuckoo.wav` | two descending notes, the original file |
 | Casio / کاسیو | `casio.ogg` | the separate watch recording, default on a fresh install |
 
-The three short Ogg files are 23,281 bytes. The cuckoo stays the original 38,852-byte WAV, because the Vorbis copy sounded thinner. A fresh install defaults to Casio. The loudness slider is a 40 dB log taper: 100 is the phone's alarm volume, 50 is 20 dB quieter, and 0 is silent. It is stored when the finger lifts.
-
-Quiet hours include both endpoints. From 22:00 to 07:00, the 22:00 chime and the 07:00 chime are both silent. The next chime is 08:00.
-
 ## Build
 
-`build.sh` is the whole build. There is no Gradle project and no third-party library.
+There is no Gradle project. Use `build.sh` with the Android SDK (platform android-36 and build-tools 34.0.0).
 
-| Tool | Expected location |
-| --- | --- |
-| JDK 11 or newer | `javac` on `PATH` |
-| Python 3 | `python3` on `PATH` |
-| Android platform 36 | `$ANDROID_SDK_ROOT/platforms/android-36/android.jar` |
-| build-tools 34.0.0 | `$ANDROID_SDK_ROOT/build-tools/34.0.0/aapt2` and `zipalign` |
-| R8 | `$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/r8`, or `$R8` |
-
-```sh
-export ANDROID_SDK_ROOT="$HOME/Android/Sdk"
-sh build.sh
-```
-
-The script compiles resources, links them with Ogg and WAV left uncompressed, dexes with R8, then runs `zipalign`. It writes `unsigned.apk` (versionCode 6, versionName 1.4.9). Sign that file with your own key. Tapping the system alarm icon opens the app. The chime itself is a separate broadcast. The loudness slider scales this app's chime against the phone's alarm volume. It does not change the system alarm volume.
-
+The script compiles resources, links them with Ogg and WAV left uncompressed, dexes with R8, then runs `zipalign`. It writes `unsigned.apk` (versionCode 2, versionName 1.6). Sign that file with your own key.
