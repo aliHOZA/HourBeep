@@ -1,6 +1,6 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-3.0-only
-# Build Hour Beep 1.5.
+# Build Hour Beep 1.6.
 # Needs: JDK 11 or newer, Python 3, Android SDK platform android-36,
 # build-tools 34.0.0 (aapt2, zipalign), and R8 at cmdline-tools/latest/bin/r8
 # or at the path in $R8.
@@ -26,8 +26,8 @@ done
   --java gen \
   --min-sdk-version 26 \
   --target-sdk-version 36 \
-  --version-code 1 \
-  --version-name 1.5 \
+  --version-code 2 \
+  --version-name 1.6 \
   -o linked.apk \
   compiled/*
 javac --release 11 -classpath "$JAR" -d classes gen/dev/hourbeep/R.java src/dev/hourbeep/*.java
